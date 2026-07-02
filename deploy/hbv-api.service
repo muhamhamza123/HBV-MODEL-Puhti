@@ -1,0 +1,54 @@
+[Unit]
+Description=HBV FastAPI Gateway (Puhti backend)
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=hbv
+Group=hbv
+WorkingDirectory=/opt/hbv/repo
+
+# ── Puhti SSH config ─────────────────────────────────────────────────────
+Environment="PUHTI_HOST=puhti.csc.fi"
+Environment="PUHTI_USER=javedham"
+Environment="PUHTI_SSH_KEY=/home/hbv/.ssh/id_puhti"
+Environment="PUHTI_SCRATCH=/scratch/project_XXXXXXX/hbv"
+Environment="PUHTI_PROJECT=project_XXXXXXX"
+
+# ── Local paths (API runs on head node, files rsynced to Puhti) ──────────
+Environment="NFS_ROOT=/data/hbv"
+Environment="HBV_NFS_ROOT=/data/hbv"
+Environment="HBV_DB_PATH=/data/hbv/api/jobs.db"
+Environment="HBV_OUTPUT_ROOT=/data/hbv/output"
+Environment="HBV_UPLOAD_ROOT=/data/hbv/uploads"
+Environment="HBV_SLURM_SH=/opt/hbv/repo/slurm/hbv_run_puhti.sh"
+
+Environment="HBV_CORS_ORIGINS=https://hbv.we3data.com"
+Environment="MAX_CONCURRENT_JOBS=3"
+Environment="HBV_USER_QUOTA_GB=100"
+
+# Tells the API to use SSH-based Slurm submission
+Environment="CLUSTER_MODE=puhti"
+
+Environment="HBV_SHP_TASO3=/scratch/project_XXXXXXX/hbv/shapefiles/taso3/taso3.shp"
+
+[Service]
+ExecStart=/opt/hbv/venv/bin/uvicorn api.main:app \
+    --host 0.0.0.0 \
+    --port 8001 \
+    --workers 2 \
+    --log-level info \
+    --access-log
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hbv-api-puhti
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65536
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

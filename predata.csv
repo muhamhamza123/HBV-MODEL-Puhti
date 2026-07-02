@@ -1,0 +1,6 @@
+input_text
+shapefile_path,/Users/mujaved21/Downloads/transfer_377547_files_e3a39d43/valumaalueet/Valumaaluejako_taso2.shp
+catchment_id_name,taso1_id
+output_csv_path,met_input.csv
+urban_land_path,/Users/mujaved21/Desktop/WE3Unit/HBV-MODEL/Data-folder/harvatihea2023/HarvaTiheaTaajama2023.shp
+csv_parameters_path,hbv_para.csv

@@ -1,0 +1,26 @@
+Value_Agric,Value_Forest,Value_Urban,Definition
+0,0,0,Lower temperature limit for snowfall/rain Tmin oC
+2,2,2,Upper temperature limit for snowfall/rain Tmax oC
+1.05,1.05,1.05,Rainfall correction factor cr
+1.1,1.1,1.1,Snowfall correction factor cs
+0,0.296007,0.102903,Interception fraction
+2.21267,2.00628,2.68192,Degree day snowmelt factor kd mm/oC/d
+0.0926396,0.0531529,0.0485893,Refreezing factor kf mm/oC/d
+0.00107624,0.0168541,0.023163,Liquid water retention parameter Lmax
+0.132864,0.039265,0.104198,FC m
+1.18331,1.46825,0.838828,PLP m
+1.88742,0.977624,2.73389,Beta
+0.0368209,0.0779623,0.0335662,UZL m
+0.00129313,0.00236137,0.00490722,PERC m/d
+0.175782,0.500234,0.485046,K0 1/d
+0.686892,0.268184,0.530756,K1 1/d
+0.205616,0.092866,0.0456306,K2 1/d
+80,80,80,MaxBas h
+1.22575,0.991444,0.255514,Crop coefficient
+16,25,14,Initial snow water equivalent mm
+116,35,92,Initial soil moisture box mm
+1.5,0.2,0,Initial SUZ mm
+2.6,6.8,13,Initial SLZ mm
+0.188546,0.188546,0.188546,Bulk snow density g/cm3
+0,0,0.451589,Imperviousness
+0.00,1.00,0.00,Land use fractions
