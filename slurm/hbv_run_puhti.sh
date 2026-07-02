@@ -2,10 +2,9 @@
 #SBATCH --job-name=hbv_run
 #SBATCH --account=project_2014823
 #SBATCH --partition=small
-#SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=8G
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4G
 #SBATCH --time=04:00:00
 #SBATCH --output=/scratch/project_2014823/hbv/logs/%j_%a.out
 #SBATCH --error=/scratch/project_2014823/hbv/logs/%j_%a.err
