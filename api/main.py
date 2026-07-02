@@ -411,7 +411,7 @@ async def list_shapefiles(user: UserDep):
             'key':    entry['key'],
             'path':   entry['path'],
             'id_col': entry['id_col'],
-            'exists': os.path.isfile(entry['path']),
+            'exists': True if CLUSTER_MODE == 'puhti' else os.path.isfile(entry['path']),
         })
     return result
 
