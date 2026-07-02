@@ -1,0 +1,43 @@
+Bootstrap: docker
+From: python:3.11-slim
+
+%post
+    apt-get update && apt-get install -y --no-install-recommends \
+        gcc g++ libgdal-dev gdal-bin libgeos-dev libproj-dev \
+        libnetcdf-dev libhdf5-dev libopenmpi-dev openmpi-bin \
+        && rm -rf /var/lib/apt/lists/*
+
+    pip install --no-cache-dir \
+        "mpi4py>=3.1" \
+        "numpy>=1.24" \
+        "pandas>=2.0" \
+        "scipy>=1.11" \
+        "geopandas>=0.14" \
+        "shapely>=2.0" \
+        "fiona>=1.9" \
+        "pyproj>=3.6" \
+        "pyogrio>=0.7" \
+        "rasterio>=1.3" \
+        "pysheds>=0.4" \
+        "netCDF4>=1.6" \
+        "xarray>=2023.1" \
+        "cdsapi>=0.6" \
+        "matplotlib>=3.7" \
+        "requests>=2.31"
+
+    mkdir -p /app
+
+%files
+    hbv_worker.py /app/hbv_worker.py
+    hbv_S2S.py /app/hbv_S2S.py
+    hbv_prepare.py /app/hbv_prepare.py
+    hbv_para.csv /app/hbv_para.csv
+    predata.csv /app/predata.csv
+
+%environment
+    export PYTHONPATH=/app:$PYTHONPATH
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+%runscript
+    exec python "$@"
