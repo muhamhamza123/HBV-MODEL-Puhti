@@ -13,8 +13,8 @@ from typing import Any
 PUHTI_HOST    = os.environ.get('PUHTI_HOST',    'puhti.csc.fi')
 PUHTI_USER    = os.environ.get('PUHTI_USER',    'javedham')
 PUHTI_KEY     = os.environ.get('PUHTI_SSH_KEY', '/home/hbv/.ssh/id_puhti')
-PUHTI_SCRATCH = os.environ.get('PUHTI_SCRATCH', '/scratch/project_XXXXXXX/hbv')
-PUHTI_PROJECT = os.environ.get('PUHTI_PROJECT', 'project_XXXXXXX')
+PUHTI_SCRATCH = os.environ.get('PUHTI_SCRATCH', '/scratch/project_2014823/hbv')
+PUHTI_PROJECT = os.environ.get('PUHTI_PROJECT', 'project_2014823')
 
 _SSH_BASE = [
     'ssh', '-i', PUHTI_KEY,
@@ -97,7 +97,7 @@ def rsync_from_puhti(remote_path: str, local_path: str, timeout: int = 300) -> N
 def remote_path(local_path: str) -> str:
     """
     Map a local /data/hbv/... path to its Puhti scratch equivalent.
-    e.g. /data/hbv/uploads/abc → /scratch/project_XXXXXXX/hbv/uploads/abc
+    e.g. /data/hbv/uploads/abc → /scratch/project_2014823/hbv/uploads/abc
     """
     rel = os.path.relpath(local_path, '/data/hbv')
     return os.path.join(PUHTI_SCRATCH, rel)

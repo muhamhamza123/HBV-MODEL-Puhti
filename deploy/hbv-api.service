@@ -14,8 +14,8 @@ WorkingDirectory=/opt/hbv/repo
 Environment="PUHTI_HOST=puhti.csc.fi"
 Environment="PUHTI_USER=javedham"
 Environment="PUHTI_SSH_KEY=/home/hbv/.ssh/id_puhti"
-Environment="PUHTI_SCRATCH=/scratch/project_XXXXXXX/hbv"
-Environment="PUHTI_PROJECT=project_XXXXXXX"
+Environment="PUHTI_SCRATCH=/scratch/project_2014823/hbv"
+Environment="PUHTI_PROJECT=project_2014823"
 
 # ── Local paths (API runs on head node, files rsynced to Puhti) ──────────
 Environment="NFS_ROOT=/data/hbv"
@@ -32,7 +32,7 @@ Environment="HBV_USER_QUOTA_GB=100"
 # Tells the API to use SSH-based Slurm submission
 Environment="CLUSTER_MODE=puhti"
 
-Environment="HBV_SHP_TASO3=/scratch/project_XXXXXXX/hbv/shapefiles/taso3/taso3.shp"
+Environment="HBV_SHP_TASO3=/scratch/project_2014823/hbv/shapefiles/taso3/taso3.shp"
 
 [Service]
 ExecStart=/opt/hbv/venv/bin/uvicorn api.main:app \
