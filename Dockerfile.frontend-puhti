@@ -1,0 +1,26 @@
+FROM quay.io/jupyter/base-notebook:python-3.11
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libgdal-dev gdal-bin libproj-dev libgeos-dev \
+        libnetcdf-dev libhdf5-dev gcc g++ pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+USER ${NB_UID}
+COPY --chown=${NB_UID}:${NB_GID} requirements-frontend.txt /tmp/requirements-frontend.txt
+RUN pip install --no-cache-dir -r /tmp/requirements-frontend.txt
+
+USER root
+RUN mkdir -p /opt/hbv && chown ${NB_UID}:${NB_GID} /opt/hbv
+COPY --chown=${NB_UID}:${NB_GID} hbv_dashboard_app.ipynb /opt/hbv/hbv_dashboard_app.ipynb
+COPY --chown=${NB_UID}:${NB_GID} dashboard_utils/         /opt/hbv/dashboard_utils/
+
+RUN mkdir -p /etc/jupyter && printf '%s\n' \
+    'c.ServerApp.default_url = "/voila/render/hbv_dashboard_app.ipynb"' \
+    'c.ServerApp.root_dir = "/opt/hbv"' \
+    > /etc/jupyter/jupyter_server_config.py
+
+USER ${NB_UID}
+
+ENV HBV_API_URL="https://hbv.we3data.com:8001"
+ENV PYTHONPATH="/home/jovyan:/opt/hbv"
