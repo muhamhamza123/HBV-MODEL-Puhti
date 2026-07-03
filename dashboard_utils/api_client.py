@@ -110,6 +110,7 @@ def submit_job(
     hbvpara_path: str | None = None,
     n_nodes: int = 4,
     cpus_per_task: int = 4,
+    partition: str = 'small',
 ) -> dict:
     """
     POST /submit — returns the job dict with job_id and initial status.
@@ -126,6 +127,7 @@ def submit_job(
         'agricultural_land_path': agricultural_land_path,
         'n_nodes':                n_nodes,
         'cpus_per_task':          cpus_per_task,
+        'partition':              partition,
     }
     if hbvpara_path:
         payload['hbvpara_path'] = hbvpara_path

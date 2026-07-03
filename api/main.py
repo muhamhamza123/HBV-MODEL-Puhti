@@ -133,6 +133,8 @@ class SubmitRequest(BaseModel):
                                         description='Number of Slurm array tasks (one per node)')
     cpus_per_task:          int = Field(default=4, ge=1, le=128,
                                         description='CPUs per Slurm task')
+    partition:              str = Field(default='small',
+                                        description='Slurm partition to submit to')
 
 
 class JobResponse(BaseModel):
@@ -250,7 +252,10 @@ async def submit_job(body: SubmitRequest, user: UserDep):
                 SLURM_SCRIPT,
                 env={k: v for k, v in env.items() if isinstance(v, str)},
                 array=array_arg,
-                extra_args=[f'--cpus-per-task={body.cpus_per_task}'],
+                extra_args=[
+                    f'--cpus-per-task={body.cpus_per_task}',
+                    f'--partition={body.partition}',
+                ],
             )
         except Exception as exc:
             raise HTTPException(status_code=500, detail=f'Puhti submit failed: {exc}')
@@ -366,29 +371,69 @@ async def get_results(job_id: str, user: UserDep):
 @app.get('/cluster/info')
 async def cluster_info(user: UserDep):
     """Return live Slurm cluster resource summary."""
-    info = {'nodes': [], 'summary': {}}
+    info = {'nodes': [], 'summary': {}, 'partitions': []}
     try:
-        # sinfo -h -o: nodename, state, CPUs (A/I/O/T = allocated/idle/other/total)
-        r = subprocess.run(
-            ['sinfo', '-h', '--Node', '-o', '%N %t %C %m'],
-            capture_output=True, text=True, timeout=10,
-        )
+        if CLUSTER_MODE == 'puhti':
+            sinfo_out = _puhti.ssh_run(
+                'sinfo -h --Node -o "%N %t %C %m %P" -p small,large,longrun 2>/dev/null',
+                timeout=15,
+            ).stdout
+            part_out = _puhti.ssh_run(
+                'sinfo -h -o "%P %l %D %C" 2>/dev/null',
+                timeout=15,
+            ).stdout
+        else:
+            sinfo_out = subprocess.run(
+                ['sinfo', '-h', '--Node', '-o', '%N %t %C %m %P'],
+                capture_output=True, text=True, timeout=10,
+            ).stdout
+            part_out = subprocess.run(
+                ['sinfo', '-h', '-o', '%P %l %D %C'],
+                capture_output=True, text=True, timeout=10,
+            ).stdout
+
         nodes = []
         total_cpus = idle_cpus = alloc_cpus = 0
-        for line in r.stdout.strip().splitlines():
+        seen = set()
+        for line in sinfo_out.strip().splitlines():
             parts = line.split()
             if len(parts) < 3:
                 continue
             name, state, cpu_str = parts[0], parts[1], parts[2]
+            if name in seen:
+                continue
+            seen.add(name)
             mem_mb = int(parts[3]) if len(parts) > 3 else 0
+            partition = parts[4].rstrip('*') if len(parts) > 4 else ''
             a, i, o, t = (int(x) for x in cpu_str.split('/'))
             nodes.append({
-                'name': name, 'state': state,
+                'name': name, 'state': state, 'partition': partition,
                 'cpus_alloc': a, 'cpus_idle': i, 'cpus_total': t,
                 'mem_gb': round(mem_mb / 1024, 1),
             })
             total_cpus += t; idle_cpus += i; alloc_cpus += a
+
+        partitions = []
+        for line in part_out.strip().splitlines():
+            parts = line.split()
+            if len(parts) < 4:
+                continue
+            pname = parts[0].rstrip('*')
+            max_time = parts[1]
+            n_nodes = parts[2]
+            cpu_str = parts[3]
+            try:
+                a, i, o, t = (int(x) for x in cpu_str.split('/'))
+            except Exception:
+                continue
+            partitions.append({
+                'name': pname, 'max_time': max_time,
+                'total_nodes': int(n_nodes),
+                'cpus_idle': i, 'cpus_total': t,
+            })
+
         info['nodes'] = nodes
+        info['partitions'] = partitions
         info['summary'] = {
             'total_nodes': len(nodes),
             'idle_nodes': sum(1 for n in nodes if n['state'] in ('idle', 'idle*')),
