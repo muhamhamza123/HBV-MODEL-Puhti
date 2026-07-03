@@ -8,7 +8,7 @@ StartLimitBurst=5
 Type=simple
 User=hbv
 Group=hbv
-WorkingDirectory=/opt/hbv/repo
+WorkingDirectory=/opt/hbv/puhti-repo
 
 # ── Puhti SSH config ─────────────────────────────────────────────────────
 Environment="PUHTI_HOST=puhti.csc.fi"
@@ -34,7 +34,6 @@ Environment="CLUSTER_MODE=puhti"
 
 Environment="HBV_SHP_TASO3=/scratch/project_2014823/hbv/shapefiles/taso3/taso3.shp"
 
-[Service]
 ExecStart=/opt/hbv/venv/bin/uvicorn api.main:app \
     --host 0.0.0.0 \
     --port 8001 \
