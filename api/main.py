@@ -244,10 +244,23 @@ async def submit_job(body: SubmitRequest, user: UserDep):
         # ── Puhti path: rsync inputs, submit via SSH ──────────────────────
         array_arg = f'0-{body.n_nodes - 1}'
         try:
-            _puhti.rsync_to_puhti(
-                os.path.join(NFS_ROOT, 'uploads', body.upload_id),
-                _puhti.remote_path(os.path.join(NFS_ROOT, 'uploads', body.upload_id)),
-            )
+            # Collect unique upload dirs from all input paths and rsync each
+            upload_root = os.path.join(NFS_ROOT, 'uploads')
+            input_paths = [
+                body.shapefile_path, body.precipitation_nc,
+                body.evapotranspiration_nc, body.temperature_nc,
+                body.urban_land_path, body.agricultural_land_path,
+            ]
+            synced = set()
+            for p in input_paths:
+                if p and p.startswith(upload_root):
+                    rel = os.path.relpath(p, upload_root)
+                    upload_id = rel.split(os.sep)[0]
+                    if upload_id not in synced:
+                        local_dir = os.path.join(upload_root, upload_id)
+                        remote_dir = _puhti.remote_path(local_dir)
+                        _puhti.rsync_to_puhti(local_dir, remote_dir)
+                        synced.add(upload_id)
             slurm_id = _puhti.sbatch(
                 SLURM_SCRIPT,
                 env={k: v for k, v in env.items() if isinstance(v, str)},
