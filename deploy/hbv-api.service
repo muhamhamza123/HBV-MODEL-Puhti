@@ -23,7 +23,7 @@ Environment="HBV_NFS_ROOT=/data/hbv"
 Environment="HBV_DB_PATH=/data/hbv/api/jobs.db"
 Environment="HBV_OUTPUT_ROOT=/data/hbv/output"
 Environment="HBV_UPLOAD_ROOT=/data/hbv/uploads"
-Environment="HBV_SLURM_SH=/opt/hbv/puhti-repo/slurm/hbv_run_puhti.sh"
+Environment="HBV_SLURM_SH=/scratch/project_2014823/hbv/hbv_run_puhti.sh"
 
 Environment="HBV_CORS_ORIGINS=https://hbv.we3data.com"
 Environment="MAX_CONCURRENT_JOBS=3"
