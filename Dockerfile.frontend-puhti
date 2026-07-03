@@ -22,5 +22,5 @@ RUN mkdir -p /etc/jupyter && printf '%s\n' \
 
 USER ${NB_UID}
 
-ENV HBV_API_URL="https://hbv.we3data.com:8001"
+ENV HBV_API_URL="http://hbv.we3data.com:8001"
 ENV PYTHONPATH="/home/jovyan:/opt/hbv"
