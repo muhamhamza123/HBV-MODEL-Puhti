@@ -35,7 +35,8 @@ mkdir -p "${SCRATCH}/logs"
 
 echo "[SLURM] job=${SLURM_JOB_ID} task=${TASK}/${TOTAL} user=${HBV_USER} started on $(hostname)"
 
-apptainer exec "${SIF}" \
+echo "[DEBUG] SHAPEFILE=${SHAPEFILE} OUTPUT=${OUTPUT_DIR}"
+apptainer exec --bind /scratch:/scratch "${SIF}" \
     python /app/hbv_worker.py \
     --job-id    "${HBV_JOB_ID}" \
     --task       "${TASK}" \
