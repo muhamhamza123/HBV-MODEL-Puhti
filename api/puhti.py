@@ -73,14 +73,14 @@ def sinfo() -> subprocess.CompletedProcess:
     return ssh_run('sinfo -h --Node -o "%N %t %C %m"', timeout=15)
 
 
-def rsync_to_puhti(local_path: str, remote_path: str, timeout: int = 300) -> None:
+def rsync_to_puhti(local_path: str, remote_path: str, timeout: int = 600) -> None:
     """Copy a file or directory from head node to Puhti scratch."""
     ssh_run(f'mkdir -p {remote_path}', timeout=15)
     subprocess.run([
-        'rsync', '-az',
+        'rsync', '-az', '--checksum',
         '-e', f'ssh -i {PUHTI_KEY} -o StrictHostKeyChecking=no -o BatchMode=yes',
-        local_path,
-        f'{PUHTI_USER}@{PUHTI_HOST}:{remote_path}',
+        local_path + ('/' if os.path.isdir(local_path) else ''),
+        f'{PUHTI_USER}@{PUHTI_HOST}:{remote_path}/',
     ], check=True, timeout=timeout)
 
 

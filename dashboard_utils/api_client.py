@@ -14,7 +14,8 @@ import time
 import requests
 
 API_URL = os.environ.get('HBV_API_URL', 'http://localhost:8000').rstrip('/')
-_TIMEOUT = 30   # seconds for non-streaming requests
+_TIMEOUT = 30        # seconds for non-streaming requests
+_SUBMIT_TIMEOUT = 600  # submit can take up to 10 min (rsync large files to Puhti)
 
 
 def _headers(json=True) -> dict:
@@ -133,7 +134,7 @@ def submit_job(
         payload['hbvpara_path'] = hbvpara_path
 
     resp = requests.post(f'{API_URL}/submit', json=payload,
-                         headers=_headers(), timeout=_TIMEOUT)
+                         headers=_headers(), timeout=_SUBMIT_TIMEOUT)
     resp.raise_for_status()
     return resp.json()
 
