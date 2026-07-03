@@ -250,6 +250,7 @@ async def submit_job(body: SubmitRequest, user: UserDep):
                 body.shapefile_path, body.precipitation_nc,
                 body.evapotranspiration_nc, body.temperature_nc,
                 body.urban_land_path, body.agricultural_land_path,
+                body.hbvpara_path,
             ]
             synced = set()
             for p in input_paths:
